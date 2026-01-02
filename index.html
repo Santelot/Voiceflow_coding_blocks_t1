@@ -3,33 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceFlow + MakeCode Blocks</title>
+    <title>Tutor MakeCode - Gnius Space (Debug)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        /* Estilos para los bloques renderizados */
+        .makecode-block-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .makecode-block-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .makecode-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .copy-btn {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: #5a6fd6;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .debug-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .debug-box pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        /* Ocultar el iframe de MakeCode */
+        #makecode-renderer {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Chatbot Educativo</h1>
-    
-    <!-- PASO 1: Cargar extensión ANTES del widget -->
-    <script src="https://santelot.github.io/Voiceflow_coding_blocks_t1/extensions/makecode-blocks-extension.js"></script>
-    
-    <!-- PASO 2: Widget de VoiceFlow -->
-    <script type="text/javascript">
-      (function(d, t) {
-        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-        v.onload = function() {
-          window.voiceflow.chat.load({
-            verify: { projectID: '693206aef4f3f8cfea18fd06' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            allowDangerousHTML: true,
-            assistant: {
-              extensions: [MakeCodeExtension]  // ✅ Registrada
+    <div class="header">
+        <h1>🤖 Tutor de micro:bit</h1>
+        <p>Aprende programación por bloques con tu asistente AI</p>
+        <p style="font-size: 12px; margin-top: 10px; opacity: 0.7;">🔧 Modo Debug Activo - Abre la consola (F12) para ver logs</p>
+    </div>
+
+    <!-- IFrame oculto de MakeCode para renderizado -->
+    <iframe 
+        id="makecode-renderer" 
+        src="https://makecode.microbit.org/--docs?render=1"
+        sandbox="allow-scripts allow-same-origin"
+    ></iframe>
+
+    <script>
+        // ========================================
+        // MOTOR DE RENDERIZADO DE MAKECODE
+        // ========================================
+        window.MakeCodeRenderer = {
+            iframe: null,
+            isReady: false,
+            queue: [],
+            callbacks: {},
+            requestId: 0,
+
+            init: function() {
+                this.iframe = document.getElementById('makecode-renderer');
+                
+                // Escuchar mensajes del iframe de MakeCode
+                window.addEventListener('message', (event) => {
+                    // Verificar origen por seguridad
+                    if (!event.origin.includes('makecode.microbit.org')) return;
+                    
+                    const data = event.data;
+                    if (data.source !== 'makecode') return;
+
+                    console.log('📨 Mensaje de MakeCode:', data.type);
+
+                    if (data.type === 'renderready') {
+                        console.log('✅ MakeCode Renderer listo');
+                        this.isReady = true;
+                        this.processQueue();
+                    } 
+                    else if (data.type === 'renderblocks') {
+                        const callback = this.callbacks[data.id];
+                        if (callback) {
+                            callback(data);
+                            delete this.callbacks[data.id];
+                        }
+                    }
+                });
+
+                console.log('🚀 MakeCode Renderer inicializado');
+            },
+
+            render: function(code) {
+                return new Promise((resolve, reject) => {
+                    const id = 'render-' + (this.requestId++);
+                    
+                    this.callbacks[id] = (response) => {
+                        if (response.uri) {
+                            resolve({
+                                uri: response.uri,
+                                width: response.width,
+                                height: response.height
+                            });
+                        } else {
+                            reject(new Error('Error al renderizar bloques'));
+                        }
+                    };
+
+                    const message = {
+                        type: 'renderblocks',
+                        id: id,
+                        code: code,
+                        options: {
+                            snippetMode: true
+                        }
+                    };
+
+                    if (this.isReady) {
+                        this.sendMessage(message);
+                    } else {
+                        this.queue.push(message);
+                    }
+
+                    // Timeout de seguridad
+                    setTimeout(() => {
+                        if (this.callbacks[id]) {
+                            delete this.callbacks[id];
+                            reject(new Error('Timeout al renderizar'));
+                        }
+                    }, 10000);
+                });
+            },
+
+            sendMessage: function(message) {
+                if (this.iframe && this.iframe.contentWindow) {
+                    this.iframe.contentWindow.postMessage(
+                        message, 
+                        'https://makecode.microbit.org'
+                    );
+                }
+            },
+
+            processQueue: function() {
+                while (this.queue.length > 0) {
+                    const msg = this.queue.shift();
+                    this.sendMessage(msg);
+                }
             }
-          });
         };
-        v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
-        v.type = "text/javascript";
-        s.parentNode.insertBefore(v, s);
-      })(document, 'script');
+
+        // Inicializar el renderer
+        document.addEventListener('DOMContentLoaded', () => {
+            window.MakeCodeRenderer.init();
+        });
+
+        // ========================================
+        // EXTENSIÓN DE VOICEFLOW PARA MAKECODE (CON DEBUG)
+        // ========================================
+        const MakeCodeBlocksExtension = {
+            name: 'MakeCodeBlocks',
+            type: 'response',
+            
+            match: ({ trace }) => {
+                // Log para ver TODAS las trazas que llegan
+                console.log('🔍 ===== TRACE RECIBIDO =====');
+                console.log('🔍 Trace type:', trace.type);
+                console.log('🔍 Trace completo:', JSON.stringify(trace, null, 2));
+                
+                // Verificar múltiples formatos posibles
+                const isMatch = trace.type === 'render_blocks' || 
+                       trace.type === 'ext_render_blocks' ||
+                       trace.type === 'RENDER_MAKECODE_BLOCKS' ||
+                       (trace.payload && trace.payload.name === 'render_blocks') ||
+                       (trace.payload && trace.payload.type === 'render_blocks');
+                
+                console.log('🔍 ¿Match?:', isMatch);
+                return isMatch;
+            },
+            
+            render: async ({ trace, element }) => {
+                console.log('🎨 ===== RENDER INICIADO =====');
+                console.log('🎨 Trace en render:', JSON.stringify(trace, null, 2));
+                
+                const payload = trace.payload || {};
+                console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+                
+                // Intentar extraer el código de TODAS las ubicaciones posibles
+                let code = null;
+                
+                // Opción 1: payload.code directamente
+                if (payload.code) {
+                    code = payload.code;
+                    console.log('💻 Código encontrado en: payload.code');
+                }
+                // Opción 2: payload.body.code
+                else if (payload.body && payload.body.code) {
+                    code = payload.body.code;
+                    console.log('💻 Código encontrado en: payload.body.code');
+                }
+                // Opción 3: payload.data.code
+                else if (payload.data && payload.data.code) {
+                    code = payload.data.code;
+                    console.log('💻 Código encontrado en: payload.data.code');
+                }
+                // Opción 4: payload es string directamente
+                else if (typeof payload === 'string') {
+                    code = payload;
+                    console.log('💻 Código encontrado en: payload (string)');
+                }
+                // Opción 5: trace.payload.body es string (JSON)
+                else if (typeof payload.body === 'string') {
+                    try {
+                        const parsed = JSON.parse(payload.body);
+                        code = parsed.code;
+                        console.log('💻 Código encontrado en: payload.body (JSON parseado)');
+                    } catch(e) {
+                        console.log('⚠️ payload.body no es JSON válido');
+                    }
+                }
+                // Opción 6: Buscar en cualquier propiedad que contenga "code"
+                else {
+                    for (const key of Object.keys(payload)) {
+                        if (key.toLowerCase().includes('code') && typeof payload[key] === 'string') {
+                            code = payload[key];
+                            console.log('💻 Código encontrado en: payload.' + key);
+                            break;
+                        }
+                    }
+                }
+                
+                console.log('💻 Código final extraído:', code);
+                
+                // Si no hay código, mostrar debug completo
+                if (!code) {
+                    console.error('❌ No se pudo extraer el código');
+                    element.innerHTML = `
+                        <div class="debug-box">
+                            <strong>⚠️ Debug: No se encontró código</strong>
+                            <p>El trace llegó pero no se pudo extraer el código. Revisa la estructura:</p>
+                            <pre>${JSON.stringify(trace, null, 2)}</pre>
+                            <p style="margin-top:10px;"><strong>Ubicaciones buscadas:</strong></p>
+                            <ul style="font-size:11px; margin-left:20px;">
+                                <li>payload.code</li>
+                                <li>payload.body.code</li>
+                                <li>payload.data.code</li>
+                                <li>payload (como string)</li>
+                                <li>payload.body (como JSON string)</li>
+                            </ul>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Crear contenedor con estado de carga
+                const container = document.createElement('div');
+                container.className = 'makecode-block-container';
+                container.innerHTML = `
+                    <div class="makecode-loader">
+                        <div class="spinner"></div>
+                        <span>Generando bloques...</span>
+                    </div>
+                `;
+                element.appendChild(container);
+
+                try {
+                    console.log('🎯 Enviando código a MakeCode Renderer...');
+                    const result = await window.MakeCodeRenderer.render(code);
+                    console.log('✅ Renderizado exitoso:', result);
+                    
+                    // Escapar el código para el botón de copiar
+                    const escapedCode = code.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+                    
+                    container.innerHTML = `
+                        <img src="${result.uri}" alt="Bloques de MakeCode" />
+                        <button class="copy-btn" onclick="navigator.clipboard.writeText(\`${escapedCode}\`).then(() => this.textContent = '¡Copiado!')">
+                            📋 Copiar código
+                        </button>
+                        <details style="margin-top:10px;font-size:11px;">
+                            <summary style="cursor:pointer;color:#666;">Ver código TypeScript</summary>
+                            <pre style="background:#f5f5f5;padding:10px;border-radius:4px;margin-top:5px;overflow-x:auto;">${code}</pre>
+                        </details>
+                    `;
+                } catch (error) {
+                    console.error('❌ Error renderizando:', error);
+                    container.innerHTML = `
+                        <div class="error-message">
+                            ⚠️ No se pudo generar la visualización: ${error.message}
+                        </div>
+                        <pre style="background:#f5f5f5;padding:10px;border-radius:6px;overflow-x:auto;font-size:12px;">${code}</pre>
+                    `;
+                }
+            }
+        };
+
+        // ========================================
+        // INICIALIZAR VOICEFLOW WIDGET
+        // ========================================
+        (function(d, t) {
+            var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+            v.onload = function() {
+                console.log('📱 Voiceflow SDK cargado');
+                window.voiceflow.chat.load({
+                    verify: { projectID: '693206aef4f3f8cfea18fd06' }, // ← TU PROJECT ID
+                    url: 'https://general-runtime.voiceflow.com',
+                    versionID: 'production',
+                  allowDangerousHTML: true,
+                    assistant: {
+                        extensions: [MakeCodeBlocksExtension]
+                    }
+                }).then(() => {
+                    console.log('✅ Voiceflow Widget inicializado con extensión MakeCode');
+                });
+            }
+            v.src = "https://cdn.voiceflow.com/widget/bundle.mjs"; 
+            v.type = "text/javascript";
+            s.parentNode.insertBefore(v, s);
+        })(document, 'script');
     </script>
 </body>
 </html>
