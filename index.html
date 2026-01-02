@@ -1,7 +1,7 @@
-<!-- Cargar la extensión ANTES del widget de VoiceFlow -->
-<script src="makecode-blocks-extension.js"></script>
+<!-- AGREGAR ANTES del widget de VoiceFlow -->
+<script src="https://santelot.github.io/Voiceflow_coding_blocks_t1/extensions/makecode-blocks-extension.js"></script>
 
-<!-- Widget de VoiceFlow -->
+<!-- Tu widget de VoiceFlow -->
 <script type="text/javascript">
   (function(d, t) {
     var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
@@ -10,11 +10,12 @@
         verify: { projectID: '693206aef4f3f8cfea18fd06' },
         url: 'https://general-runtime.voiceflow.com',
         versionID: 'production',
-        allowDangerousHTML: true, // ⚠️ IMPORTANTE
+        
+        // ⚠️ CRÍTICO: Debe estar en true
+        allowDangerousHTML: true,
+        
         assistant: {
-          extensions: [
-            MakeCodeBlocksExtension  // 👈 Registrar extensión
-          ]
+          extensions: [MakeCodeExtension]  // 👈 AGREGAR ESTO
         }
       });
     };
