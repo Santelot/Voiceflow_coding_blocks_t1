@@ -1,0 +1,25 @@
+<!-- Cargar la extensión ANTES del widget de VoiceFlow -->
+<script src="makecode-blocks-extension.js"></script>
+
+<!-- Widget de VoiceFlow -->
+<script type="text/javascript">
+  (function(d, t) {
+    var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+    v.onload = function() {
+      window.voiceflow.chat.load({
+        verify: { projectID: '693206aef4f3f8cfea18fd06' },
+        url: 'https://general-runtime.voiceflow.com',
+        versionID: 'production',
+        allowDangerousHTML: true, // ⚠️ IMPORTANTE
+        assistant: {
+          extensions: [
+            MakeCodeBlocksExtension  // 👈 Registrar extensión
+          ]
+        }
+      });
+    };
+    v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
+    v.type = "text/javascript";
+    s.parentNode.insertBefore(v, s);
+  })(document, 'script');
+</script>
