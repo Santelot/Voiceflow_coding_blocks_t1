@@ -1,26 +1,35 @@
-<!-- AGREGAR ANTES del widget de VoiceFlow -->
-<script src="https://santelot.github.io/Voiceflow_coding_blocks_t1/extensions/makecode-blocks-extension.js"></script>
-
-<!-- Tu widget de VoiceFlow -->
-<script type="text/javascript">
-  (function(d, t) {
-    var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-    v.onload = function() {
-      window.voiceflow.chat.load({
-        verify: { projectID: '693206aef4f3f8cfea18fd06' },
-        url: 'https://general-runtime.voiceflow.com',
-        versionID: 'production',
-        
-        // ⚠️ CRÍTICO: Debe estar en true
-        allowDangerousHTML: true,
-        
-        assistant: {
-          extensions: [MakeCodeExtension]  // 👈 AGREGAR ESTO
-        }
-      });
-    };
-    v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
-    v.type = "text/javascript";
-    s.parentNode.insertBefore(v, s);
-  })(document, 'script');
-</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceFlow + MakeCode Blocks</title>
+</head>
+<body>
+    <h1>Chatbot Educativo</h1>
+    
+    <!-- PASO 1: Cargar extensión ANTES del widget -->
+    <script src="https://santelot.github.io/Voiceflow_coding_blocks_t1/extensions/makecode-blocks-extension.js"></script>
+    
+    <!-- PASO 2: Widget de VoiceFlow -->
+    <script type="text/javascript">
+      (function(d, t) {
+        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        v.onload = function() {
+          window.voiceflow.chat.load({
+            verify: { projectID: '693206aef4f3f8cfea18fd06' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            allowDangerousHTML: true,
+            assistant: {
+              extensions: [MakeCodeExtension]  // ✅ Registrada
+            }
+          });
+        };
+        v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
+        v.type = "text/javascript";
+        s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+</body>
+</html>
