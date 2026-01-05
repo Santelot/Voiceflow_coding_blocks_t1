@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor MakeCode - Gnius Space</title>
+    <title>Xolo AI - Identidades + MakeCode</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,116 +15,388 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            transition: background 0.3s ease;
         }
         
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
         
-        .header h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            opacity: 0.9;
+        .header { text-align: center; color: white; margin-bottom: 15px; }
+        .header h1 { font-size: 1.6rem; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 13px; }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        /* Contenedor del chat embebido */
+        .customizer-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-height: 640px;
+            overflow-y: auto;
+        }
+        
+        body.dark-mode .customizer-panel {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        .customizer-panel h2 {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        body.dark-mode .customizer-panel h2 {
+            color: #f1f5f9;
+            border-bottom-color: #4a5568;
+        }
+
+        .section { margin-bottom: 15px; }
+        .section h3 { 
+            font-size: 0.85rem; 
+            color: #555; 
+            margin-bottom: 10px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        body.dark-mode .section h3 {
+            color: #a0aec0;
+            border-bottom-color: #4a5568;
+        }
+
+        /* Dark Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        body.dark-mode .mode-toggle {
+            background: #2d3748;
+        }
+        
+        .mode-toggle span {
+            font-size: 13px;
+            color: #555;
+        }
+        
+        body.dark-mode .mode-toggle span {
+            color: #a0aec0;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #4a5568;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+
+        /* Identity Presets Grid */
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .preset-btn {
+            padding: 10px 6px;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .preset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .preset-btn.active { 
+            border-color: #333; 
+            box-shadow: 0 0 0 2px white, 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        body.dark-mode .preset-btn.active {
+            border-color: #f1f5f9;
+        }
+
+        /* Current Identity Display */
+        .current-identity {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .current-identity h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .identity-colors {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .color-chip {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .color-chip .swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .color-chip span {
+            font-size: 9px;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        .btn-primary:hover { 
+            opacity: 0.9; 
+            transform: translateY(-1px);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        
+        body.dark-mode .status-bar {
+            background: #2d3748;
+            color: #a0aec0;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+        .status-dot.warning { background: #ffc107; }
+        .status-dot.error { background: #dc3545; }
+
         #chat-container {
             width: 100%;
             max-width: 400px;
-            height: 600px;
+            height: 640px;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             background: white;
         }
 
-        /* Ocultar el iframe de MakeCode */
-        #makecode-renderer {
-            position: absolute;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-        }
-
-        /* Modal de pantalla completa */
+        /* Fullscreen Modal for MakeCode */
         .fullscreen-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.95);
             z-index: 99999;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             padding: 20px;
         }
-
-        .fullscreen-modal.active {
-            display: flex;
-        }
-
-        .fullscreen-modal img {
-            max-width: 95%;
-            max-height: 85vh;
+        .fullscreen-modal.active { display: flex; }
+        .fullscreen-modal img { 
+            max-width: 95%; 
+            max-height: 85vh; 
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 0 50px rgba(255,255,255,0.1);
         }
-
-        .fullscreen-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-            background: none;
+        .fullscreen-close { 
+            position: absolute; 
+            top: 20px; 
+            right: 30px; 
+            font-size: 40px; 
+            color: white; 
+            cursor: pointer; 
+            background: none; 
             border: none;
             opacity: 0.8;
             transition: opacity 0.2s;
         }
-
-        .fullscreen-close:hover {
-            opacity: 1;
-        }
-
+        .fullscreen-close:hover { opacity: 1; }
         .fullscreen-hint {
             color: rgba(255,255,255,0.6);
             margin-top: 15px;
             font-size: 14px;
         }
 
+        #makecode-renderer { position: absolute; left: -9999px; width: 1px; height: 1px; }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; align-items: center; }
+            .customizer-panel { order: 2; max-height: none; }
+            #chat-container { order: 1; }
+            .presets-grid { grid-template-columns: repeat(5, 1fr); }
+        }
+        
+        @media (max-width: 500px) {
+            .presets-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🤖 Tutor de micro:bit</h1>
-        <p>Aprende programación por bloques con tu asistente AI</p>
+        <h1>🐕 Xolo AI Identidades + MakeCode</h1>
+        <p>Selecciona una identidad visual para el chatbot</p>
     </div>
 
-    <!-- Contenedor donde se incrustará el chat -->
-    <div id="chat-container"></div>
+    <div class="main-container">
+        <div class="customizer-panel">
+            <h2>⚙️ Configuración de Identidad</h2>
 
-    <!-- Modal para pantalla completa -->
+            <!-- Dark Mode Toggle -->
+            <div class="mode-toggle">
+                <span>☀️ Claro</span>
+                <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()"></div>
+                <span>🌙 Oscuro</span>
+            </div>
+
+            <!-- Identity Presets -->
+            <div class="section">
+                <h3>🎨 Identidades de Xolo AI</h3>
+                <div class="presets-grid" id="presetsGrid">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Current Identity Display -->
+            <div class="current-identity" id="currentIdentity">
+                <h4 id="identityName">Xolo AI 3</h4>
+                <div class="identity-colors">
+                    <div class="color-chip">
+                        <div class="swatch" id="swatchGrad1"></div>
+                        <span>Grad 1</span>
+                    </div>
+                    <div class="color-chip">
+                        <div class="swatch" id="swatchGrad2"></div>
+                        <span>Grad 2</span>
+                    </div>
+                    <div class="color-chip">
+                        <div class="swatch" id="swatchSolid"></div>
+                        <span>Usuario</span>
+                    </div>
+                    <div class="color-chip">
+                        <div class="swatch" id="swatchButton"></div>
+                        <span>Botones</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="applyStyles()">
+                🎨 Aplicar Estilos
+            </button>
+
+            <div class="status-bar">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Listo</span>
+            </div>
+        </div>
+
+        <div id="chat-container"></div>
+    </div>
+
+    <!-- Fullscreen Modal for MakeCode -->
     <div class="fullscreen-modal" id="fullscreen-modal">
         <button class="fullscreen-close" onclick="closeFullscreen()">&times;</button>
         <img id="fullscreen-img" src="" alt="Bloques MakeCode">
         <p class="fullscreen-hint">Presiona ESC o haz clic en × para cerrar</p>
     </div>
 
-    <!-- IFrame oculto de MakeCode para renderizado -->
+    <!-- Hidden MakeCode Renderer IFrame -->
     <iframe 
         id="makecode-renderer" 
         src="https://makecode.microbit.org/--docs?render=1"
@@ -136,8 +404,347 @@
     ></iframe>
 
     <script>
+        const VOICEFLOW_PROJECT_ID = '693206aef4f3f8cfea18fd06';
+
         // ========================================
-        // FUNCIONES DE PANTALLA COMPLETA
+        // XOLO AI IDENTITIES
+        // ========================================
+        const xoloIdentities = [
+            {
+                id: 'xolo3',
+                name: 'Xolo AI 3',
+                gradient: ['#0000ff', '#00ffff'],
+                solidColor: '#0080ff',
+                userBubbleText: '#ffffff'
+            },
+            {
+                id: 'xolo4',
+                name: 'Xolo AI 4',
+                gradient: ['#0065a8', '#00ff66'],
+                solidColor: '#00ffbf',
+                userBubbleText: '#0f172a'
+            },
+            {
+                id: 'xolo5',
+                name: 'Xolo AI 5',
+                gradient: ['#007bff', '#33ff00'],
+                solidColor: '#00ff4c',
+                userBubbleText: '#0f172a'
+            },
+            {
+                id: 'xolo6',
+                name: 'Xolo AI 6',
+                gradient: ['#00991f', '#ccff00'],
+                solidColor: '#4dff00',
+                userBubbleText: '#0f172a'
+            },
+            {
+                id: 'xolo7',
+                name: 'Xolo AI 7',
+                gradient: ['#ff0022', '#9900ff'],
+                solidColor: '#cc008b',
+                userBubbleText: '#ffffff'
+            },
+            {
+                id: 'xolo8',
+                name: 'Xolo AI 8',
+                gradient: ['#ff7700', '#ff00cc'],
+                solidColor: '#ff3c64',
+                userBubbleText: '#ffffff'
+            },
+            {
+                id: 'xolo9',
+                name: 'Xolo AI 9',
+                gradient: ['#ffae00', '#ff0033'],
+                solidColor: '#ff5619',
+                userBubbleText: '#ffffff'
+            },
+            {
+                id: 'xolo10',
+                name: 'Xolo AI 10',
+                gradient: ['#003380', '#b300ff'],
+                solidColor: '#1300bd',
+                userBubbleText: '#ffffff'
+            },
+            {
+                id: 'xolo11',
+                name: 'Xolo AI 11',
+                gradient: ['#1e0080', '#ff00cc'],
+                solidColor: '#8400bd',
+                userBubbleText: '#ffffff'
+            },
+            {
+                id: 'xolo12',
+                name: 'Xolo AI 12',
+                gradient: ['#660080', '#ff0033'],
+                solidColor: '#bd0084',
+                userBubbleText: '#ffffff'
+            }
+        ];
+
+        // State
+        let currentIdentity = xoloIdentities[0];
+        let isDarkMode = false;
+        let lastCSS = '';
+
+        // ========================================
+        // CONSTANT VALUES (as specified)
+        // ========================================
+        const constants = {
+            light: {
+                chatBg: '#ffffff',
+                inputBg: '#ffffff',
+                inputText: '#0f172a',
+                inputBorder: '#ffffff',
+                assistantBg: '#e0e0e0',
+                assistantText: '#0f172a'
+            },
+            dark: {
+                chatBg: '#0f172a',
+                inputBg: '#ffffff',
+                inputText: '#0f172a',
+                inputBorder: '#ffffff',
+                assistantBg: '#1e293b',
+                assistantText: '#f1f5f9'
+            }
+        };
+
+        // ========================================
+        // INITIALIZE PRESET BUTTONS
+        // ========================================
+        function initPresets() {
+            const grid = document.getElementById('presetsGrid');
+            grid.innerHTML = '';
+            
+            xoloIdentities.forEach((identity, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'preset-btn' + (index === 0 ? ' active' : '');
+                btn.style.background = `linear-gradient(135deg, ${identity.gradient[0]}, ${identity.gradient[1]})`;
+                btn.textContent = identity.name.replace('Xolo AI ', '');
+                btn.onclick = () => selectIdentity(identity, btn);
+                grid.appendChild(btn);
+            });
+            
+            updateIdentityDisplay();
+        }
+
+        // ========================================
+        // SELECT IDENTITY
+        // ========================================
+        function selectIdentity(identity, btn) {
+            currentIdentity = identity;
+            
+            // Update active button
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            updateIdentityDisplay();
+            applyStyles();
+        }
+
+        // ========================================
+        // UPDATE IDENTITY DISPLAY
+        // ========================================
+        function updateIdentityDisplay() {
+            const display = document.getElementById('currentIdentity');
+            display.style.background = `linear-gradient(135deg, ${currentIdentity.gradient[0]}, ${currentIdentity.gradient[1]})`;
+            
+            document.getElementById('identityName').textContent = currentIdentity.name;
+            document.getElementById('swatchGrad1').style.background = currentIdentity.gradient[0];
+            document.getElementById('swatchGrad2').style.background = currentIdentity.gradient[1];
+            document.getElementById('swatchSolid').style.background = currentIdentity.solidColor;
+            document.getElementById('swatchButton').style.background = currentIdentity.gradient[0]; // Buttons use first gradient color
+            
+            // Update apply button gradient
+            document.querySelector('.btn-primary').style.background = 
+                `linear-gradient(135deg, ${currentIdentity.gradient[0]}, ${currentIdentity.gradient[1]})`;
+        }
+
+        // ========================================
+        // TOGGLE DARK MODE
+        // ========================================
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            document.getElementById('darkModeToggle').classList.toggle('active', isDarkMode);
+            applyStyles();
+        }
+
+        // ========================================
+        // GENERATE CSS
+        // ========================================
+        function generateCSS() {
+            const mode = isDarkMode ? constants.dark : constants.light;
+            const identity = currentIdentity;
+            
+            const headerBg = `linear-gradient(135deg, ${identity.gradient[0]}, ${identity.gradient[1]})`;
+            const userBubbleBg = identity.solidColor;
+            const userBubbleText = identity.userBubbleText;
+            const buttonBg = identity.gradient[0]; // Buttons use FIRST gradient color
+            const buttonText = '#ffffff';
+
+            return `/* === XOLO AI IDENTITY: ${identity.name} === */
+/* === MODE: ${isDarkMode ? 'DARK' : 'LIGHT'} === */
+
+/* === HEADER (top bar - always white text) === */
+.vfrc-header, [class*="Header"]:not([class*="AssistantInfo"]) {
+  background: ${headerBg} !important;
+}
+.vfrc-header *, .vfrc-header [class*="Title"], .vfrc-header [class*="Text"] {
+  color: #ffffff !important;
+}
+
+/* === WELCOME/ASSISTANT INFO (center area - changes with mode) === */
+.vfrc-assistant-info, [class*="AssistantInfo"], [class*="Welcome"] {
+  color: ${isDarkMode ? '#f1f5f9' : '#0f172a'} !important;
+}
+.vfrc-assistant-info *, [class*="AssistantInfo"] *, [class*="Welcome"] * {
+  color: ${isDarkMode ? '#f1f5f9' : '#0f172a'} !important;
+}
+.vfrc-assistant-info--title, [class*="AssistantInfo"] [class*="Title"], [class*="AssistantName"] {
+  color: ${isDarkMode ? '#f1f5f9' : '#0f172a'} !important;
+}
+.vfrc-assistant-info--description, [class*="AssistantInfo"] [class*="Description"], [class*="Subtitle"], [class*="Tagline"] {
+  color: ${isDarkMode ? '#94a3b8' : '#64748b'} !important;
+}
+
+/* === CHAT BACKGROUND === */
+.vfrc-chat, .vfrc-chat--dialog, [class*="Dialog"], [class*="ChatContainer"] {
+  background: ${mode.chatBg} !important;
+}
+
+/* === WELCOME/INTRO TEXT === */
+.vfrc-assistant-info, .vfrc-assistant-info--description, 
+[class*="AssistantInfo"], [class*="Description"], [class*="Subtitle"],
+.vfrc-assistant-info p, .vfrc-assistant-info span,
+[class*="assistant"] p, [class*="assistant"] span,
+[class*="Welcome"] p, [class*="Welcome"] span {
+  color: ${mode.assistantText} !important;
+}
+
+/* === ASSISTANT MESSAGES === */
+.vfrc-system-response .vfrc-message, [class*="SystemMessage"] {
+  background: ${mode.assistantBg} !important;
+  color: ${mode.assistantText} !important;
+  border-radius: 12px !important;
+}
+
+/* === USER MESSAGES === */
+.vfrc-user-response .vfrc-message, [class*="UserMessage"] {
+  background: ${userBubbleBg} !important;
+  color: ${userBubbleText} !important;
+  border-radius: 12px !important;
+}
+
+/* === BUTTONS (UI) === */
+.vfrc-button, button[class*="Button"], [class*="ActionButton"] {
+  background: ${buttonBg} !important;
+  color: ${buttonText} !important;
+  border: none !important;
+  border-radius: 8px !important;
+}
+.vfrc-button:hover, button[class*="Button"]:hover {
+  opacity: 0.9 !important;
+}
+
+/* === INPUT AREA === */
+.vfrc-chat-input, [class*="InputContainer"], [class*="ChatInput"] {
+  background: ${mode.inputBg} !important;
+  border-color: ${mode.inputBorder} !important;
+}
+.vfrc-chat-input textarea, .vfrc-chat-input input, [class*="InputField"] {
+  background: ${mode.inputBg} !important;
+  color: ${mode.inputText} !important;
+  border: 1px solid ${mode.inputBorder} !important;
+}
+.vfrc-chat-input textarea::placeholder, .vfrc-chat-input input::placeholder {
+  color: ${isDarkMode ? '#94a3b8' : '#64748b'} !important;
+}
+
+/* === SEND BUTTON === */
+.vfrc-chat-input button, [class*="SendButton"] {
+  background: ${buttonBg} !important;
+  color: ${buttonText} !important;
+}
+
+/* === SCROLLBAR (Dark Mode) === */
+${isDarkMode ? `
+.vfrc-chat::-webkit-scrollbar {
+  width: 8px;
+}
+.vfrc-chat::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+.vfrc-chat::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+` : ''}`;
+        }
+
+        // ========================================
+        // APPLY STYLES (INJECT CSS)
+        // ========================================
+        function applyStyles() {
+            const css = generateCSS();
+            lastCSS = css;
+            
+            setStatus('applying', 'Aplicando estilos...');
+            
+            injectCSS(css);
+            
+            setTimeout(() => injectCSS(css), 300);
+            setTimeout(() => injectCSS(css), 800);
+            setTimeout(() => {
+                setStatus('success', `✅ ${currentIdentity.name} aplicado`);
+            }, 1000);
+        }
+
+        function injectCSS(css) {
+            const inject = (root) => {
+                if (!root) return;
+                
+                let style = root.querySelector('#vf-custom-css');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'vf-custom-css';
+                    root.appendChild(style);
+                }
+                style.textContent = css;
+
+                root.querySelectorAll('*').forEach(el => {
+                    if (el.shadowRoot) inject(el.shadowRoot);
+                });
+            };
+
+            const container = document.getElementById('chat-container');
+            if (container?.shadowRoot) inject(container.shadowRoot);
+
+            document.querySelectorAll('*').forEach(el => {
+                if (el.shadowRoot) inject(el.shadowRoot);
+            });
+        }
+
+        function setStatus(type, text) {
+            const dot = document.getElementById('statusDot');
+            const txt = document.getElementById('statusText');
+            dot.className = 'status-dot' + (type === 'warning' ? ' warning' : type === 'error' ? ' error' : '');
+            txt.textContent = text;
+        }
+
+        // ========================================
+        // MUTATION OBSERVER
+        // ========================================
+        let observerTimeout = null;
+        const observer = new MutationObserver(() => {
+            if (observerTimeout) clearTimeout(observerTimeout);
+            observerTimeout = setTimeout(() => {
+                if (lastCSS) injectCSS(lastCSS);
+            }, 500);
+        });
+
+        // ========================================
+        // FULLSCREEN FUNCTIONS
         // ========================================
         function openFullscreen(imgSrc) {
             const modal = document.getElementById('fullscreen-modal');
@@ -153,18 +760,16 @@
             document.body.style.overflow = '';
         }
 
-        // Cerrar con ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeFullscreen();
         });
 
-        // Cerrar al hacer clic fuera de la imagen
         document.getElementById('fullscreen-modal').addEventListener('click', (e) => {
             if (e.target.id === 'fullscreen-modal') closeFullscreen();
         });
 
         // ========================================
-        // MOTOR DE RENDERIZADO DE MAKECODE
+        // MAKECODE RENDERER ENGINE
         // ========================================
         window.MakeCodeRenderer = {
             iframe: null,
@@ -182,8 +787,6 @@
                     const data = event.data;
                     if (data.source !== 'makecode') return;
 
-                    console.log('📨 MakeCode:', data.type);
-
                     if (data.type === 'renderready') {
                         console.log('✅ MakeCode Renderer listo');
                         this.isReady = true;
@@ -197,8 +800,6 @@
                         }
                     }
                 });
-
-                console.log('🚀 MakeCode Renderer inicializado');
             },
 
             render: function(code) {
@@ -222,9 +823,7 @@
                         type: 'renderblocks',
                         id: id,
                         code: code,
-                        options: {
-                            snippetMode: true
-                        }
+                        options: { snippetMode: true }
                     };
 
                     if (this.isReady) {
@@ -244,10 +843,7 @@
 
             sendMessage: function(message) {
                 if (this.iframe && this.iframe.contentWindow) {
-                    this.iframe.contentWindow.postMessage(
-                        message, 
-                        'https://makecode.microbit.org'
-                    );
+                    this.iframe.contentWindow.postMessage(message, 'https://makecode.microbit.org');
                 }
             },
 
@@ -259,12 +855,8 @@
             }
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            window.MakeCodeRenderer.init();
-        });
-
         // ========================================
-        // EXTENSIÓN DE VOICEFLOW PARA MAKECODE
+        // VOICEFLOW MAKECODE EXTENSION
         // ========================================
         const MakeCodeBlocksExtension = {
             name: 'MakeCodeBlocks',
@@ -279,15 +871,15 @@
             },
             
             render: async ({ trace, element }) => {
+                if (lastCSS) setTimeout(() => injectCSS(lastCSS), 100);
+                
                 const payload = trace.payload || {};
                 
-                // Extraer código de múltiples ubicaciones posibles
                 let code = payload.code || 
                            payload.body?.code || 
                            payload.data?.code ||
                            (typeof payload === 'string' ? payload : null);
                 
-                // Intentar parsear si body es string JSON
                 if (!code && typeof payload.body === 'string') {
                     try {
                         const parsed = JSON.parse(payload.body);
@@ -300,7 +892,6 @@
                     return;
                 }
                 
-                // Crear contenedor principal
                 const container = document.createElement('div');
                 container.style.cssText = `
                     background: #ffffff;
@@ -312,10 +903,9 @@
                     max-width: 100%;
                 `;
                 
-                // Loader
                 container.innerHTML = `
                     <div style="display:flex;align-items:center;justify-content:center;padding:20px;color:#666;font-size:14px;">
-                        <div style="width:20px;height:20px;border:3px solid #f3f3f3;border-top:3px solid #667eea;border-radius:50%;animation:spin 1s linear infinite;margin-right:10px;"></div>
+                        <div style="width:20px;height:20px;border:3px solid #f3f3f3;border-top:3px solid ${currentIdentity.gradient[0]};border-radius:50%;animation:spin 1s linear infinite;margin-right:10px;"></div>
                         <span>Generando bloques...</span>
                     </div>
                 `;
@@ -324,10 +914,8 @@
                 try {
                     const result = await window.MakeCodeRenderer.render(code);
                     
-                    // Estado inicial: escalado (fit)
                     let isScaleMode = true;
                     
-                    // Contenedor de la imagen
                     const imgWrapper = document.createElement('div');
                     imgWrapper.style.cssText = `
                         width: 100%;
@@ -337,12 +925,10 @@
                         position: relative;
                     `;
                     
-                    // Imagen
                     const img = document.createElement('img');
                     img.src = result.uri;
                     img.alt = 'Bloques de MakeCode';
                     
-                    // Función para aplicar estilos según modo
                     const applyImageStyle = () => {
                         if (isScaleMode) {
                             img.style.cssText = `
@@ -368,16 +954,12 @@
                     
                     applyImageStyle();
                     
-                    // Click en imagen para pantalla completa (solo en modo escalar)
                     img.onclick = () => {
-                        if (isScaleMode) {
-                            openFullscreen(result.uri);
-                        }
+                        if (isScaleMode) openFullscreen(result.uri);
                     };
                     
                     imgWrapper.appendChild(img);
                     
-                    // Barra de botones
                     const buttonBar = document.createElement('div');
                     buttonBar.style.cssText = `
                         display: flex;
@@ -386,27 +968,25 @@
                         flex-wrap: wrap;
                     `;
                     
-                    // Estilo común para botones
                     const btnStyle = `
                         padding: 6px 10px;
-                        background: #667eea;
+                        background: ${currentIdentity.gradient[0]};
                         color: white;
                         border: none;
                         border-radius: 6px;
                         cursor: pointer;
                         font-size: 11px;
-                        transition: background 0.2s;
+                        transition: opacity 0.2s;
                         display: flex;
                         align-items: center;
                         gap: 4px;
                     `;
                     
-                    // Botón Toggle Escalar/Scroll
                     const toggleBtn = document.createElement('button');
                     toggleBtn.innerHTML = '↔️ Scroll';
                     toggleBtn.style.cssText = btnStyle;
-                    toggleBtn.onmouseover = () => toggleBtn.style.background = '#5a6fd6';
-                    toggleBtn.onmouseout = () => toggleBtn.style.background = '#667eea';
+                    toggleBtn.onmouseover = () => toggleBtn.style.opacity = '0.8';
+                    toggleBtn.onmouseout = () => toggleBtn.style.opacity = '1';
                     toggleBtn.onclick = () => {
                         isScaleMode = !isScaleMode;
                         applyImageStyle();
@@ -414,20 +994,18 @@
                         fullscreenBtn.style.display = isScaleMode ? 'flex' : 'none';
                     };
                     
-                    // Botón Pantalla Completa
                     const fullscreenBtn = document.createElement('button');
                     fullscreenBtn.innerHTML = '🔍 Ampliar';
                     fullscreenBtn.style.cssText = btnStyle;
-                    fullscreenBtn.onmouseover = () => fullscreenBtn.style.background = '#5a6fd6';
-                    fullscreenBtn.onmouseout = () => fullscreenBtn.style.background = '#667eea';
+                    fullscreenBtn.onmouseover = () => fullscreenBtn.style.opacity = '0.8';
+                    fullscreenBtn.onmouseout = () => fullscreenBtn.style.opacity = '1';
                     fullscreenBtn.onclick = () => openFullscreen(result.uri);
                     
-                    // Botón Copiar
                     const copyBtn = document.createElement('button');
                     copyBtn.innerHTML = '📋 Copiar';
                     copyBtn.style.cssText = btnStyle;
-                    copyBtn.onmouseover = () => copyBtn.style.background = '#5a6fd6';
-                    copyBtn.onmouseout = () => copyBtn.style.background = '#667eea';
+                    copyBtn.onmouseover = () => copyBtn.style.opacity = '0.8';
+                    copyBtn.onmouseout = () => copyBtn.style.opacity = '1';
                     copyBtn.onclick = () => {
                         navigator.clipboard.writeText(code).then(() => {
                             copyBtn.innerHTML = '✅ Copiado';
@@ -439,7 +1017,6 @@
                     buttonBar.appendChild(fullscreenBtn);
                     buttonBar.appendChild(copyBtn);
                     
-                    // Details para ver código
                     const details = document.createElement('details');
                     details.style.cssText = 'margin-top:10px;font-size:11px;';
                     details.innerHTML = `
@@ -447,7 +1024,6 @@
                         <pre style="background:#f5f5f5;padding:10px;border-radius:4px;margin-top:5px;overflow-x:auto;font-size:11px;white-space:pre-wrap;word-break:break-all;">${code}</pre>
                     `;
                     
-                    // Limpiar y agregar elementos
                     container.innerHTML = '';
                     container.appendChild(imgWrapper);
                     container.appendChild(buttonBar);
@@ -464,18 +1040,26 @@
         };
 
         // ========================================
-        // INICIALIZAR VOICEFLOW EMBED
+        // INITIALIZATION
+        // ========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            window.MakeCodeRenderer.init();
+            initPresets();
+            
+            observer.observe(document.getElementById('chat-container'), { childList: true, subtree: true });
+        });
+
+        // ========================================
+        // INITIALIZE VOICEFLOW EMBED
         // ========================================
         (function(d, t) {
             var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
             v.onload = function() {
                 window.voiceflow.chat.load({
-                    verify: { projectID: '693206aef4f3f8cfea18fd06' },
+                    verify: { projectID: VOICEFLOW_PROJECT_ID },
                     url: 'https://general-runtime.voiceflow.com',
                     versionID: 'production',
-                    voice: {
-                        url: "https://runtime-api.voiceflow.com"
-                    },
+                    voice: { url: "https://runtime-api.voiceflow.com" },
                     render: {
                         mode: 'embedded',
                         target: document.getElementById('chat-container')
@@ -484,6 +1068,9 @@
                         extensions: [MakeCodeBlocksExtension]
                     }
                 });
+                
+                setTimeout(() => applyStyles(), 1500);
+                setTimeout(() => applyStyles(), 3000);
             }
             v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
             v.type = "text/javascript";
